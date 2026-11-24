@@ -9,6 +9,8 @@ import androidx.car.app.model.CarIcon
 import androidx.car.app.model.Template
 import androidx.car.app.navigation.model.NavigationTemplate
 import androidx.core.graphics.drawable.IconCompat
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import nl.flitsmeister.car_common.CarMapRenderer
 import nl.flitsmeister.car_common.R
 import nl.flitsmeister.car_common.extentions.addAction
@@ -21,6 +23,16 @@ class CarMapScreen(
     private val carContext: CarContext,
     private val carMapRenderer: CarMapRenderer
 ) : Screen(carContext) {
+
+    init {
+        // the location permission might have been granted while the
+        // permission screen was on top of this one
+        lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onResume(owner: LifecycleOwner) {
+                carMapRenderer.refreshLocationComponent()
+            }
+        })
+    }
 
     override fun onGetTemplate(): Template {
         val templateBuilder = NavigationTemplate.Builder()
